@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .form-container { margin: 20px 0; }
+        .form-container input { margin: 5px 0; }
+        .form-container button { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Employee Management</h1>
+    <div class="form-container">
+        <h2>Add Employee</h2>
+        <form id="employeeForm">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" required><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br>
+            <label for="phoneNumber">Phone Number:</label><br>
+            <input type="text" id="phoneNumber" name="phoneNumber" required><br>
+            <button type="submit">Add Employee</button>
+        </form>
+    </div>
+    <div class="form-container">
+        <h2>Employee List</h2>
+        <table id="employeeTable">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Actions</th>
+            </tr>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchEmployees();
+
+            document.getElementById('employeeForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                addEmployee();
+            });
+        });
+
+        function fetchEmployees() {
+            fetch('/api/employees')
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('employeeTable');
+                    table.innerHTML = '<tr><th>ID</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Actions</th></tr>';
+                    data.forEach(employee => {
+                        const row = table.insertRow();
+                        row.insertCell(0).textContent = employee.id;
+                        row.insertCell(1).textContent = employee.name;
+                        row.insertCell(2).textContent = employee.email;
+                        row.insertCell(3).textContent = employee.phoneNumber;
+                        const actionsCell = row.insertCell(4);
+                        actionsCell.innerHTML = `<button onclick="editEmployee(${employee.id})">Edit</button>
+                                                 <button onclick="deleteEmployee(${employee.id})">Delete</button>`;
+                    });
+                });
+        }
+
+        function addEmployee() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            fetch('/api/employees', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phoneNumber })
+            })
+            .then(response => response.json())
+            .then(() => {
+                document.getElementById('employeeForm').reset();
+                fetchEmployees();
+            });
+        }
+
+        function editEmployee(id) {
+            // Implement edit functionality here
+        }
+
+        function deleteEmployee(id) {
+            fetch(`/api/employees/${id}`, { method: 'DELETE' })
+                .then(() => fetchEmployees());
+        }
+    </script>
+</body>
+</html>
 
