@@ -3,78 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Management</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        input[type="text"], input[type="email"] {
-            padding: 5px;
-            margin: 5px 0;
-            width: 200px;
-        }
-        button {
-            padding: 5px 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>User Management</title>
 </head>
 <body>
-    <h1>Employee Management</h1>
-    
-    <h2>Add New Employee</h2>
-    <form action="/employees/add" method="post">
-        <input type="text" name="name" placeholder="Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="text" name="phoneNumber" placeholder="Phone Number" required>
-        <button type="submit">Add Employee</button>
-    </form>
-
-    <h2>Employee List</h2>
+    <h1>User Management</h1>
+    <a href="/users/new">Add New User</a>
     <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Thymeleaf iteration -->
-            <tr th:each="employee : ${employees}">
-                <td th:text="${employee.id}"></td>
-                <td th:text="${employee.name}"></td>
-                <td th:text="${employee.email}"></td>
-                <td th:text="${employee.phoneNumber}"></td>
-                <td>
-                    <form action="/employees/update" method="post" style="display:inline;">
-                        <input type="hidden" name="id" th:value="${employee.id}">
-                        <input type="text" name="name" th:value="${employee.name}" required>
-                        <input type="email" name="email" th:value="${employee.email}" required>
-                        <input type="text" name="phoneNumber" th:value="${employee.phoneNumber}" required>
-                        <button type="submit">Update</button>
-                    </form>
-                    <form action="/employees/delete" method="post" style="display:inline;">
-                        <input type="hidden" name="id" th:value="${employee.id}">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.phoneNumber}"></td>
+            <td>
+                <a th:href="@{/users/edit/{id}(id=${user.id})}">Edit</a>
+                <a th:href="@{/users/delete/{id}(id=${user.id})}">Delete</a>
+            </td>
+        </tr>
     </table>
 </body>
 </html>
