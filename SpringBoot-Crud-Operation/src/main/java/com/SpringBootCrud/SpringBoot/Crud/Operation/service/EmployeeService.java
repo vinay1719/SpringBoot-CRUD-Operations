@@ -13,30 +13,15 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public List<Employee> getAllEmployees() {
+    public List<Employee> findAll() {
         return employeeRepository.findAll();
     }
 
-    public Employee getEmployeeById(Long id) {
-        return employeeRepository.findById(id).orElse(null);
+    public void save(Employee employee) {
+        employeeRepository.save(employee);
     }
 
-    public Employee saveEmployee(Employee employee) {
-        return employeeRepository.save(employee);
-    }
-
-    public Employee updateEmployee(Long id, Employee updatedEmployee) {
-        Employee employee = employeeRepository.findById(id).orElse(null);
-        if (employee != null) {
-            employee.setName(updatedEmployee.getName());
-            employee.setEmail(updatedEmployee.getEmail());
-            employee.setPhoneNumber(updatedEmployee.getPhoneNumber());
-            return employeeRepository.save(employee);
-        }
-        return null;
-    }
-
-    public void deleteEmployee(Long id) {
+    public void deleteById(Long id) {
         employeeRepository.deleteById(id);
     }
 }
