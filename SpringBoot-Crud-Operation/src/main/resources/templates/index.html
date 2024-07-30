@@ -1,35 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Management</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        table, th, td { border: 1px solid #ddd; }
-        th, td { padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .form-container { margin: 20px 0; }
-        .form-container input { margin: 5px 0; }
-        .form-container button { margin-top: 10px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        input[type="text"], input[type="email"] {
+            padding: 5px;
+            margin: 5px 0;
+            width: 200px;
+        }
+        button {
+            padding: 5px 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Employee Management</h1>
-    <div class="form-container">
-        <h2>Add Employee</h2>
-        <form id="employeeForm">
-            <label for="name">Name:</label><br>
-            <input type="text" id="name" name="name" required><br>
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br>
-            <label for="phoneNumber">Phone Number:</label><br>
-            <input type="text" id="phoneNumber" name="phoneNumber" required><br>
-            <button type="submit">Add Employee</button>
-        </form>
-    </div>
-    <div class="form-container">
-        <h2>Employee List</h2>
-        <table id="employeeTable">
+    
+    <h2>Add New Employee</h2>
+    <form action="/employees/add" method="post">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="phoneNumber" placeholder="Phone Number" required>
+        <button type="submit">Add Employee</button>
+    </form>
+
+    <h2>Employee List</h2>
+    <table>
+        <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
@@ -37,63 +52,29 @@
                 <th>Phone Number</th>
                 <th>Actions</th>
             </tr>
-        </table>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchEmployees();
-
-            document.getElementById('employeeForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                addEmployee();
-            });
-        });
-
-        function fetchEmployees() {
-            fetch('/api/employees')
-                .then(response => response.json())
-                .then(data => {
-                    const table = document.getElementById('employeeTable');
-                    table.innerHTML = '<tr><th>ID</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Actions</th></tr>';
-                    data.forEach(employee => {
-                        const row = table.insertRow();
-                        row.insertCell(0).textContent = employee.id;
-                        row.insertCell(1).textContent = employee.name;
-                        row.insertCell(2).textContent = employee.email;
-                        row.insertCell(3).textContent = employee.phoneNumber;
-                        const actionsCell = row.insertCell(4);
-                        actionsCell.innerHTML = `<button onclick="editEmployee(${employee.id})">Edit</button>
-                                                 <button onclick="deleteEmployee(${employee.id})">Delete</button>`;
-                    });
-                });
-        }
-
-        function addEmployee() {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phoneNumber = document.getElementById('phoneNumber').value;
-
-            fetch('/api/employees', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, phoneNumber })
-            })
-            .then(response => response.json())
-            .then(() => {
-                document.getElementById('employeeForm').reset();
-                fetchEmployees();
-            });
-        }
-
-        function editEmployee(id) {
-            // Implement edit functionality here
-        }
-
-        function deleteEmployee(id) {
-            fetch(`/api/employees/${id}`, { method: 'DELETE' })
-                .then(() => fetchEmployees());
-        }
-    </script>
+        </thead>
+        <tbody>
+            <!-- Thymeleaf iteration -->
+            <tr th:each="employee : ${employees}">
+                <td th:text="${employee.id}"></td>
+                <td th:text="${employee.name}"></td>
+                <td th:text="${employee.email}"></td>
+                <td th:text="${employee.phoneNumber}"></td>
+                <td>
+                    <form action="/employees/update" method="post" style="display:inline;">
+                        <input type="hidden" name="id" th:value="${employee.id}">
+                        <input type="text" name="name" th:value="${employee.name}" required>
+                        <input type="email" name="email" th:value="${employee.email}" required>
+                        <input type="text" name="phoneNumber" th:value="${employee.phoneNumber}" required>
+                        <button type="submit">Update</button>
+                    </form>
+                    <form action="/employees/delete" method="post" style="display:inline;">
+                        <input type="hidden" name="id" th:value="${employee.id}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
-
